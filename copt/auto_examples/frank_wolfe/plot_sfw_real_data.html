@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comparison of variants of Stochastic FW on real data &#8212; copt  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"argmin": "\\DeclareMathOperator*{\\argmin}{\\mathbf{arg\\,min}}", "argmax": "\\DeclareMathOperator*{\\argmin}{\\mathbf{arg\\,max}}", "bs": "\\newcommand{\\bs}[1]{\\boldsymbol{#1}}"}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]]}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Comparison of variants of Stochastic FW" href="plot_sfw.html" />
+    <link rel="prev" title="Update Direction Overlap in Frank-Wolfe" href="plot_vertex_overlap.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-frank-wolfe-plot-sfw-real-data-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="comparison-of-variants-of-stochastic-fw-on-real-data">
+<span id="sphx-glr-auto-examples-frank-wolfe-plot-sfw-real-data-py"></span><h1>Comparison of variants of Stochastic FW on real data<a class="headerlink" href="#comparison-of-variants-of-stochastic-fw-on-real-data" title="Permalink to this headline">¶</a></h1>
+<p>The problem solved in this case is a L1 constrained logistic regression
+(sometimes referred to as sparse logistic regression).</p>
+<img alt="../../_images/sphx_glr_plot_sfw_real_data_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_sfw_real_data_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Running SAGFW
+Running MHK
+Running LF
+Plotting...
+Done.
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copt</span> <span class="k">as</span> <span class="nn">cp</span>
+
+<span class="c1"># .. Load dataset ..</span>
+<span class="kn">import</span> <span class="nn">copt.constraint</span>
+<span class="kn">import</span> <span class="nn">copt.loss</span>
+
+<a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="View documentation for numpy.random.seed"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <a href="../../generated/copt.datasets.load_rcv1.html#copt.datasets.load_rcv1" title="View documentation for copt.datasets.load_rcv1"><span class="n">cp</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_rcv1</span></a><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;RCV1&quot;</span>
+<span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)</span>
+<span class="n">freq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_samples</span> <span class="o">//</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># .. objective function and regularizer ..</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">copt</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">constraint</span> <span class="o">=</span> <span class="n">copt</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">L1Ball</span><span class="p">(</span><span class="mf">2e3</span><span class="p">)</span>
+
+<span class="c1"># .. callbacks to track progress ..</span>
+<span class="k">def</span> <span class="nf">fw_gap</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_grad</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">constraint</span><span class="o">.</span><span class="n">lmo</span><span class="p">(</span><span class="o">-</span><span class="n">grad</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="o">-</span><span class="n">grad</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TraceGaps</span><span class="p">(</span><a href="../../generated/copt.utils.Trace.html#copt.utils.Trace" title="View documentation for copt.utils.Trace"><span class="n">cp</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">Trace</span></a><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TraceGaps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace_gaps</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trace_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fw_gap</span><span class="p">(</span><span class="n">dl</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TraceGaps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">dl</span><span class="p">)</span>
+
+
+<span class="n">cb_SAG</span> <span class="o">=</span> <span class="n">TraceGaps</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+<span class="n">cb_MHK</span> <span class="o">=</span> <span class="n">TraceGaps</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+<span class="n">cb_LF</span> <span class="o">=</span> <span class="n">TraceGaps</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+
+<span class="c1"># .. run the SFW algorithm ..</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running SAGFW&quot;</span><span class="p">)</span>
+<span class="n">result_SAG</span> <span class="o">=</span> <a href="../../generated/copt.minimize_sfw.html#copt.minimize_sfw" title="View documentation for copt.minimize_sfw"><span class="n">cp</span><span class="o">.</span><span class="n">minimize_sfw</span></a><span class="p">(</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">partial_deriv</span><span class="p">,</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">n_features</span><span class="p">),</span>
+    <span class="n">constraint</span><span class="o">.</span><span class="n">lmo</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">cb_SAG</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+    <span class="n">variant</span><span class="o">=</span><span class="s1">&#39;SAG&#39;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running MHK&quot;</span><span class="p">)</span>
+<span class="n">result_MHK</span> <span class="o">=</span> <a href="../../generated/copt.minimize_sfw.html#copt.minimize_sfw" title="View documentation for copt.minimize_sfw"><span class="n">cp</span><span class="o">.</span><span class="n">minimize_sfw</span></a><span class="p">(</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">partial_deriv</span><span class="p">,</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">n_features</span><span class="p">),</span>
+    <span class="n">constraint</span><span class="o">.</span><span class="n">lmo</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">cb_MHK</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+    <span class="n">variant</span><span class="o">=</span><span class="s1">&#39;MHK&#39;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running LF&quot;</span><span class="p">)</span>
+<span class="n">result_LF</span> <span class="o">=</span> <a href="../../generated/copt.minimize_sfw.html#copt.minimize_sfw" title="View documentation for copt.minimize_sfw"><span class="n">cp</span><span class="o">.</span><span class="n">minimize_sfw</span></a><span class="p">(</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">partial_deriv</span><span class="p">,</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">n_features</span><span class="p">),</span>
+    <span class="n">constraint</span><span class="o">.</span><span class="n">lmo</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="n">cb_LF</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+    <span class="n">variant</span><span class="o">=</span><span class="s1">&#39;LF&#39;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotting...&quot;</span><span class="p">)</span>
+<span class="c1"># .. plot the result ..</span>
+<span class="n">max_gap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+              <span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+              <span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">)</span>
+
+<span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="p">)</span>
+
+<span class="n">min_val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">),</span>
+              <span class="p">)</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Sparse Logistic Regression -- </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">),</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_gap</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFW -- Lu and Freund (2020)&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_gap</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFW -- Mokhtari et al. (2020)&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_gaps</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_gap</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SFW -- Negiar et al. (2020)&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Relative FW gap&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)),</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_LF</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFW -- Lu and Freund (2020)&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)),</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_MHK</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFW -- Mokhtari et al. (2018)&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)),</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">cb_SAG</span><span class="o">.</span><span class="n">trace_fx</span><span class="p">)</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SFW -- Négiar et al. (2020)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Relative suboptimality&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Number of gradient evaluations&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="View documentation for matplotlib.pyplot.legend"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 47 minutes  40.209 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  79 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-frank-wolfe-plot-sfw-real-data-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/0f7c3f975a8f21bddb756e628bdb9758/plot_sfw_real_data.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sfw_real_data.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/dc3dd3edd36ffbc78f8621c2e263b853/plot_sfw_real_data.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_sfw_real_data.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">copt</a></h1>
+
+
+
+<p class="blurb">Optimization in Python</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../solvers.html">Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../loss_functions.html">Loss, constraints and regularizers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Example Gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#miscellaneous-examples">Miscellaneous examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#frank-wolfe">Frank-Wolfe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#proximal-splitting">Proximal Splitting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/auto_examples/frank_wolfe/plot_sfw_real_data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/openopt/copt" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

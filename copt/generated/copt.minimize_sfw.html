@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>copt.minimize_sfw &#8212; copt  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"argmin": "\\DeclareMathOperator*{\\argmin}{\\mathbf{arg\\,min}}", "argmax": "\\DeclareMathOperator*{\\argmin}{\\mathbf{arg\\,max}}", "bs": "\\newcommand{\\bs}[1]{\\boldsymbol{#1}}"}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]]}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Loss, constraints and regularizers" href="../loss_functions.html" />
+    <link rel="prev" title="copt.minimize_vrtos" href="copt.minimize_vrtos.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="copt-minimize-sfw">
+<h1>copt.minimize_sfw<a class="headerlink" href="#copt-minimize-sfw" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="copt.minimize_sfw">
+<code class="sig-prename descclassname">copt.</code><code class="sig-name descname">minimize_sfw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_deriv</span></em>, <em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">x0</span></em>, <em class="sig-param"><span class="n">lmo</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">step_size</span><span class="o">=</span><span class="default_value">'sublinear'</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="o">=</span><span class="default_value">500</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">1e-06</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variant</span><span class="o">=</span><span class="default_value">'SAGA'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#copt.minimize_sfw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stochastic Frank-Wolfe (SFW) algorithm.</p>
+<blockquote>
+<div><p>This implementation of SFW algorithms can solve optimization problems of the form</p>
+<blockquote>
+<div><p>argmin_{x in constraint} (1/n)sum_{i}^n_samples f(A_i^T x, b_i)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>f_deriv</dt><dd><p>derivative of f</p>
+</dd>
+<dt>x0: np.ndarray</dt><dd><p>Starting point for optimization.</p>
+</dd>
+<dt>step_size: function or None, optional</dt><dd><p>Step size for the optimization. If None is given, this will be set as the
+default for <cite>variant</cite>. The function should return a tuple of floats.
+One is needed for <cite>SAG</cite> and <cite>SAGA</cite> variants. Two are needed for <cite>MHK</cite> and <cite>LF</cite>.</p>
+</dd>
+<dt>lmo: function</dt><dd><p>returns the update direction</p>
+</dd>
+<dt>batch_size: int</dt><dd><p>Size of the random subset (without replacement) to compute the stochastic gradient estimator.</p>
+</dd>
+<dt>max_iter: int</dt><dd><p>Maximum number of passes on the dataset (epochs).</p>
+</dd>
+<dt>tol: float</dt><dd><p>Tolerance criterion. The algorithm will stop whenever the
+difference between two successive iterates is below tol.</p>
+</dd>
+<dt>verbose: bool</dt><dd><p>Verbosity level. True might print some messages.</p>
+</dd>
+<dt>callback: function or None</dt><dd><p>If not None, callback will be called at each iteration.</p>
+</dd>
+<dt>variant: str in {‘SAG’, ‘MHK’, ‘LF’}</dt><dd><p>Controls which variant of SFW to use.
+‘SAG’ is described in [NDTELP2020],
+‘SAGA’ is yet to be described.
+‘MHK’ is described in [MHK2020],
+‘LF’ is described in [LF2020].</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>opt: OptimizeResult</dt><dd><p>The optimization result represented as a
+<code class="docutils literal notranslate"><span class="pre">scipy.optimize.OptimizeResult</span></code> object. Important attributes are:
+<code class="docutils literal notranslate"><span class="pre">x</span></code> the solution array, <code class="docutils literal notranslate"><span class="pre">success</span></code> a Boolean flag indicating if
+the optimizer exited successfully and <code class="docutils literal notranslate"><span class="pre">message</span></code> which describes
+the cause of the termination. See <cite>scipy.optimize.OptimizeResult</cite>
+for a description of other attributes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>References:</p>
+<dl class="citation">
+<dt class="label" id="ndtelp2020"><span class="brackets">NDTELP2020</span></dt>
+<dd><p>Negiar, Geoffrey, Dresdner, Gideon, Tsai Alicia, El Ghaoui, Laurent, Locatello, Francesco, and Pedregosa, Fabian.</p>
+</dd>
+</dl>
+<p><cite>“Stochastic Frank-Wolfe for Constrained Finite-Sum Minimization” &lt;https://arxiv.org/abs/2002.11860v2&gt;</cite> arxiv:2002.11860v2 (2020).</p>
+<dl class="citation">
+<dt class="label" id="mhk2018"><span class="brackets">MHK2018</span></dt>
+<dd><p>Mokhtari, Aryan, Hassani, Hamed, and Karbassi, Amin <a href="#id1"><span class="problematic" id="id2">`</span></a>”Stochastic Conditional Gradient Methods:</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>From Convex Minimization to Submodular Maximization” &lt;<a class="reference external" href="https://arxiv.org/abs/1804.09554">https://arxiv.org/abs/1804.09554</a>&gt;`_, arxiv:1804.09554 (2018)</p>
+<blockquote>
+<div><dl class="citation">
+<dt class="label" id="lf2020"><span class="brackets">LF2020</span></dt>
+<dd><p>Lu, Haihao, and Freund, Robert <a href="#id3"><span class="problematic" id="id4">`</span></a>”Generalized Stochastic Frank-Wolfe Algorithm with Stochastic ‘Substitute’ Gradient for Structured Convex Optimization”</p>
+</dd>
+</dl>
+<p>&lt;<a class="reference external" href="https://arxiv.org/pdf/1806.05123.pdf">https://arxiv.org/pdf/1806.05123.pdf</a>&gt;`_, Mathematical Programming (2020).</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">copt</a></h1>
+
+
+
+<p class="blurb">Optimization in Python</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../solvers.html">Solvers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../solvers.html#id1">Proximal-Gradient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../solvers.html#primal-dual-hybrid-gradient">Primal-dual hybrid gradient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../solvers.html#three-operator-splitting">Three-operator splitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../solvers.html#frank-wolfe">Frank-Wolfe</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../solvers.html#stochastic-methods">Stochastic methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../loss_functions.html">Loss, constraints and regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citing.html">Citing</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/generated/copt.minimize_sfw.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/openopt/copt" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

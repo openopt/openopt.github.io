@@ -1,0 +1,13 @@
+
+:orphan:
+
+.. _sphx_glr_auto_examples_sg_execution_times:
+
+Computation times
+=================
+**00:22.301** total execution time for **auto_examples** files:
+
+- **00:09.940**: :ref:`sphx_glr_auto_examples_plot_jax_copt.py` (``plot_jax_copt.py``)
+- **00:07.263**: :ref:`sphx_glr_auto_examples_plot_saga_vs_svrg.py` (``plot_saga_vs_svrg.py``)
+- **00:03.647**: :ref:`sphx_glr_auto_examples_plot_group_lasso.py` (``plot_group_lasso.py``)
+- **00:01.451**: :ref:`sphx_glr_auto_examples_plot_accelerated.py` (``plot_accelerated.py``)
